@@ -1,0 +1,153 @@
+{% extends "admin/challenges/create.html" %}
+
+{% block header %}
+    <div class="alert alert-secondary" role="alert">
+        动态 docker 挑战允许玩家部署他们的每个挑战独立实例。
+    </div>
+{% endblock %}
+
+
+{% block value %}
+    <div class="form-group">
+	   <script>
+		const input = document.getElementById('docker_image');
+		//const suggestions = document.getElementById('suggestions');
+		const suggestions = input.nextElementSibling;
+
+		input.addEventListener('focus', function() {
+		  loadSuggestions();
+		  suggestions.style.display = 'block';
+		});
+
+		let selecting = false;
+
+		input.addEventListener('blur', function() {
+			setTimeout(() => {
+			    suggestions.style.display = 'none';
+			}, 200);
+		});
+
+		async function loadSuggestions() {
+			suggestions.innerHTML = 'Loading...';
+			const response = await fetch('/api/v1/challenges/docker_images');
+			const data = await response.json();
+
+			let html = '';
+			for (let image of data.data) {
+				html += '<div onclick="selectImage(\'' + image + '\')">' + image + '</div>';
+				//html += '<div >' + image + '</div>';
+				//html += `<div>${item}</div>`;
+			}
+			  //suggestions.innerHTML = html;
+			  suggestions.innerHTML = html;
+		}
+
+		selecting = true;
+		suggestions.addEventListener('click', (event) => {
+		  if (event.target.tagName === 'DIV') {
+		    input.value = event.target.textContent;
+		  }
+		});
+
+		//suggestions.addEventListener('click', (event) => {
+		//    if (event.target.tagName === 'DIV') {
+		//      input.value = event.target.textContent;
+		//      suggestions.style.display = 'none';
+		//    }
+		//  });
+
+		function selectImage(image) {
+			//document.getElementById('docker_image').value = image;
+			suggestions.style.display = 'none';
+		}
+
+	   </script>
+        <label for="value">Docker 镜像<br>
+            <small class="form-text text-muted">
+                用于部署的 docker 映像
+            </small>
+        </label>
+	<input id="docker_image" type="text" class="form-control" name="docker_image" placeholder="输入 docker 镜像名称" required>
+	<div id="suggestions" style="position: absolute; z-index: 999; max-height: 200px; overflow-y: scroll; background-color: white; border: 1px solid #ddd; width: 100%;">
+	</div>
+    </div>
+    <div class="form-group">
+        <label for="value">Type<br>
+            <small class="form-text text-muted">如何重定向流量
+            </small>
+        </label>
+        <select class="form-control" name="redirect_type">
+            <option value="direct">Direct</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="value">docker内部端口<br>
+            <small class="form-text text-muted">
+                确定 docker内部端口应重定向其实例中的哪个端口流量
+            </small>
+        </label>
+        <input type="number" class="form-control" name="docker_port" placeholder="输入docker内部要映射的端口"
+               required>
+    </div>
+    <div class="form-group">
+        <label for="value">Docker 容器内存限制<br>
+            <small class="form-text text-muted">
+                内存使用限制
+            </small>
+        </label>
+        <input type="text" class="form-control" name="memory_limit" placeholder="输入内存限制" value="128m"
+               required>
+    </div>
+    <div class="form-group">
+        <label for="value">Docker 容器 CPU 限制<br>
+            <small class="form-text text-muted">
+               CPU 使用率限制
+            </small>
+        </label>
+        <input type="number" class="form-control" name="cpu_limit" placeholder="输入 cpu 限制" value="0.5"
+               required>
+    </div>
+    <div class="form-group">
+        <label for="value">Initial Value<br>
+            <small class="form-text text-muted">
+                这就是挑战最初的价值。
+            </small>
+        </label>
+        <input type="number" class="form-control" name="value" placeholder="输入值" required>
+    </div>
+
+    <div class="form-group">
+        <label for="value">衰减极限<br>
+            <small class="form-text text-muted">
+                在质询达到其最小值之前的求解量
+            </small>
+        </label>
+        <input type="number" class="form-control" name="decay" placeholder="输入衰减限值" required>
+    </div>
+
+    <div class="form-group">
+        <label for="value">最小值<br>
+            <small class="form-text text-muted">
+                这是挑战的最低价值
+            </small>
+        </label>
+        <input type="number" class="form-control" name="minimum" placeholder="输入最小值" required>
+    </div>
+
+    <div class="form-group">
+        <label for="value">分数类型<br>
+            <small class="form-text text-muted">
+                决定是否使用动态分数
+            </small>
+        </label>
+
+        <select class="form-control" name="dynamic_score">
+            <option value="0" selected>静态分数</option>
+            <option value="1">动态得分</option>
+        </select>
+    </div>
+{% endblock %}
+
+{% block type %}
+    <input type="hidden" value="zezezi_dynamic_docker" name="type" id="chaltype">
+{% endblock %}

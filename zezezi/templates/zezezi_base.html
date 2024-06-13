@@ -1,0 +1,26 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Zezezi</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <ul class="nav nav-pills flex-column">
+                    {% block menu %}
+                    {% endblock %}
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content">
+                    {% block panel %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
